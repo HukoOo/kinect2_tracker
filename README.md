@@ -9,8 +9,6 @@ Vrep wrapper for joint mapping with RosInterface
 
 
 
-#Dependencies 
-
 ## Step 0: Install Updates
 ---------------
 ```
@@ -46,7 +44,7 @@ sudo vi /etc/ld.so.conf.d/custom.conf
 ## Step 2: Install OpenNI and NiTE
 ---------------
 - Download OpenNI from:
-http://www.openni.org/openni-sdk/
+http://openni.ru/openni-sdk/index.html
 
 - Uncompress OpenNI and install:
 ```
@@ -58,7 +56,7 @@ sudo ./install.sh
 ```
 
 - Download NiTE from:
-http://www.openni.org/files/nite/
+http://openni.ru/files/nite/index.html
 
 - Uncompress NiTE and install:
 ```
@@ -110,7 +108,7 @@ then simply ```catkin_make ```
 
 To run the program copy the NiTE to .ros path and launch the file
 ```
-./setuo_nite.bash
+./setup_nite.bash
 roslaunch kinect2_tracker tracker.launch
 ```
 ## Step 4: Run the V-rep simulation
