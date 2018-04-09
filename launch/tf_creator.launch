@@ -1,0 +1,9 @@
+<!---->
+<launch>
+
+	<node pkg="kinect2_tracker" type="frame_creator_node" name="frame_creator_node" output="screen"/>
+
+	
+    <!--tx: 0.295729 ty:  -0.463885 tz: -0.0325348 rw: 1 rx: 0 ry: 0 rz: 0-->
+</launch>
+

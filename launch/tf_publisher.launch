@@ -1,0 +1,7 @@
+<!---->
+<launch>
+
+	<node pkg="kinect2_tracker" type="vrep_publisher_node" name="vrep_publisher_node" output="screen"/>
+
+</launch>
+

@@ -1,0 +1,19 @@
+<!---->
+<launch>
+
+    <arg name="rvizconfig" default="$(find kinect2_tracker)/rviz/visualization.rviz" />
+    
+	<node pkg="kinect2_tracker" type="kinect2_tracker_node" name="kinect2_tracker_node2" output="screen">
+    	<param name="tf_prefix" value="tmp" />
+    	<param name="relative_frame" value="/camera_frame" />
+	</node>
+	<!-- TF Static Transforms to World -->
+    <node pkg="tf" type="static_transform_publisher" name="camera_to_global" 
+    args="0 0 1 0.707 0 0 0.707 global_space /camera_frame 100"/>
+	
+    <node pkg="kinect2_tracker" type="frame_creator_node" name="frame_creator_node" output="screen"/>
+    <node pkg="kinect2_tracker" type="vrep_publisher_node" name="vrep_publisher_node" output="screen"/>
+    
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
+</launch>
+
