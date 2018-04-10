@@ -56,11 +56,10 @@ sudo ./install.sh
 ```
 
 - Download NiTE from:
-http://openni.ru/files/nite/index.html
+https://sourceforge.net/projects/roboticslab/files/External/nite/NiTE-Linux-x64-2.2.tar.bz2
 
 - Uncompress NiTE and install:
 ```
-unzip NiTE-Linux-x64-2.2.tar1.zip
 tar xvf NiTE-Linux-x64-2.2.tar.bz2
 cd NiTE-Linux-x64-2.2
 sudo ./install.sh
