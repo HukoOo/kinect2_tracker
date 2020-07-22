@@ -5,31 +5,24 @@
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_listener.h>
-#include <image_transport/image_transport.h>
-#include <cv_bridge/cv_bridge.h>
 #include <iostream>
-
 #include <user_IDs.h>
-
+#include <cv_bridge/cv_bridge.h>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/distortion_models.h>
+#include <image_transport/image_transport.h>
 #include "NiTE.h"
-
-#include <sensor_msgs/image_encodings.h>
-#include <Eigen/Geometry>
-#include <tf_conversions/tf_eigen.h>
-
-
 #include <openni2_camera/openni2_device.h>
 #include <OniCTypes.h>
 #include <OpenNI.h>
 #include <OniCEnums.h>
+#include <sensor_msgs/image_encodings.h>
+#include <Eigen/Geometry>
+#include <tf_conversions/tf_eigen.h>
 #include <pcl_ros/point_cloud.h>
 #include <pcl/point_types.h>
-#include <tf2_msgs/TFMessage.h>//__JS
-#include <geometry_msgs/TransformStamped.h>//__JS
 
 #ifndef ALPHA
 #define ALPHA 1/256
@@ -196,9 +189,6 @@ public:
 
     // Initialize the users IDs publisher
     userPub_ = nh_.advertise<skeleton_tracker::user_IDs>("/people", 1);
-
-    //Intention Publisher __JS
-    //intentionPub_ = nh_.advertise<tf2_msgs::TFMessage>("/intention_pose", 1);
 
     rate_ = new ros::Rate(100);
 
@@ -432,7 +422,6 @@ public:
     {
       tf::Vector3 currentVec3 = tf::Vector3(j.getPosition().x / 1000.0, j.getPosition().y / 1000.0, j.getPosition().z / 1000.0);
       tf::Transform transform;
-
         if (j_name != "torso")
         {
             tf::Vector3 rVec3 = tf::Vector3(r.getPosition().x / 1000.0, r.getPosition().y / 1000.0, r.getPosition().z / 1000.0);
@@ -500,24 +489,7 @@ public:
       }
       else if (user.getSkeleton().getState() == nite::SKELETON_TRACKED)
       {
-
         JointMap named_joints;
-        tf2_ros::Buffer tfBuffer;
-        tf2_msgs::TFMessage intention_msg;
-        geometry_msgs::TransformStamped left_shoulder, left_elbow, right_shoulder, right_elbow;
-
-/*
-        left_shoulder = tfBuffer.lookupTransform("camera_frame", "left_shoulder",ros::Time(0));
-        left_elbow = tfBuffer.lookupTransform("camera_frame", "left_elbow",ros::Time(0));
-        right_shoulder = tfBuffer.lookupTransform("camera_frame", "right_shoulder",ros::Time(0));
-        right_elbow = tfBuffer.lookupTransform("camera_frame", "right_elbow",ros::Time(0));
-        intention_msg.transforms[0] = left_shoulder;
-        intention_msg.transforms[1] = left_elbow;
-        intention_msg.transforms[2] = right_shoulder;
-        intention_msg.transforms[3] = right_elbow;
-
-        intentionPub_.publish(intention_msg);
-*/
 
         named_joints["torso"] = (user.getSkeleton().getJoint(nite::JOINT_TORSO));// this value is Joint_name, position & orientation & confidence, userid
         named_joints["left_hip"] = (user.getSkeleton().getJoint(nite::JOINT_LEFT_HIP));
@@ -534,7 +506,7 @@ public:
         named_joints["right_elbow"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_ELBOW));
         named_joints["left_hand"] = (user.getSkeleton().getJoint(nite::JOINT_LEFT_HAND));
         named_joints["right_hand"] = (user.getSkeleton().getJoint(nite::JOINT_RIGHT_HAND));
-        //Publish the joint (name, niteConstruct, ConnectedJoint name, niteConstruct, User
+//Publish the joint (name, niteConstruct, ConnectedJoint name, niteConstruct, User
         publishJointTF("torso", named_joints["torso"], "torso", named_joints["torso"], user.getId());
         publishJointTF("left_hip", named_joints["left_hip"], "torso", named_joints["torso"], user.getId());
         publishJointTF("right_hip", named_joints["right_hip"], "torso", named_joints["torso"], user.getId());
@@ -660,8 +632,6 @@ public:
   ros::Publisher pointCloudPub_;
   /// Image message
   sensor_msgs::ImagePtr msg_;
-
-  //ros::Publisher intentionPub_;
 
   /// Node rate
   ros::Rate* rate_;
