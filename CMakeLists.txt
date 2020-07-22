@@ -82,25 +82,28 @@ include_directories(
 # add_dependencies(kinect2_tracker ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 
-
+## NiTE2 Library and Directory
+## Latest driver and is the last update
 set(NITE2_DIR ~/package_ws/NiTE-Linux-x64-2.2)
 set(NITE2_LIB ~/package_ws/NiTE-Linux-x64-2.2/Redist/libNiTE2.so)
+include_directories(${NITE2_DIR}/Include)
+
+## OpenNI2 Library and Directory
+## Latest driver is not up to date with Kinect One
 #set(OPENNI2_DIR ~/package_ws/OpenNI-Linux-x64-2.3)
 #set(OPENNI2_LIB ~/package_ws/OpenNI-Linux-x64-2.3/Redist/libOpenNI2.so)
-include_directories(./include/Openni2/)
 #include_directories(${OPENNI2_DIR}/Include)
-include_directories(${NITE2_DIR}/Include)
+
 include_directories(./include)
+include_directories(./include/Openni2/)
 include_directories(${OpenCV_INCLUDE_DIRS}/include)
 
+# Executables for .cpp files
 add_executable(kinect2_tracker_node src/kinect2_tracker_node.cpp)
-target_link_libraries(kinect2_tracker_node OpenNI2 ${NITE2_LIB}  ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
-
 add_executable(frame_creator_node src/frame_creator_node.cpp)
-target_link_libraries(frame_creator_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
-
 add_executable(vrep_publisher_node src/vrep_publisher_node.cpp)
-target_link_libraries(vrep_publisher_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
 
-#add_executable(human_tracker_show src/human_tracker_show.cpp)
-#target_link_libraries(human_tracker_show OpenNI2 ${NITE2_LIB}  ${catkin_LIBRARIES} ${Eigen_LIBRARIES} ${OpenCV_LIBS})
+# Libraries for the executable files
+target_link_libraries(kinect2_tracker_node OpenNI2 ${NITE2_LIB}  ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
+target_link_libraries(frame_creator_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
+target_link_libraries(vrep_publisher_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
