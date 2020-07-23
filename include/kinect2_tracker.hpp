@@ -9,7 +9,7 @@
 #include <cv_bridge/cv_bridge.h>
 #include <iostream>
 
-#include <user_IDs.h>
+#include <kinect2_tracker/user_IDs.h>
 
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -62,13 +62,13 @@ typedef union
 /**
  * Class \ref kinect2_tracker. This class can track the skeleton of people and returns joints as a TF stream,
  */
-class kinect2_tracker
+class k2_tracker
 {
 public:
   /**
    * Constructor
    */
-  kinect2_tracker() :
+  k2_tracker() :
       it_(nh_)
   {
 
@@ -187,15 +187,12 @@ public:
     // Initialize the depth image publisher
     depthPub_ = it_.advertise("/camera/depth/image", 1);
 
-    // Initialize the users IDs publisher
-    userPub_ = nh_.advertise<skeleton_tracker::user_IDs>("/people", 1);
-
     // Initialize both the Camera Info publishers
     depthInfoPub_ = nh_.advertise<sensor_msgs::CameraInfo>("/camera/depth/camera_info", 1);
     rgbInfoPub_ = nh_.advertise<sensor_msgs::CameraInfo>("/camera/rgb/camera_info", 1);
 
     // Initialize the users IDs publisher
-    userPub_ = nh_.advertise<skeleton_tracker::user_IDs>("/people", 1);
+    userPub_ = nh_.advertise<kinect2_tracker::user_IDs>("/people", 1);
 
     //Intention Publisher __JS
     //intentionPub_ = nh_.advertise<tf2_msgs::TFMessage>("/intention_pose", 1);
@@ -206,7 +203,7 @@ public:
   /**
    * Destructor
    */
-  ~kinect2_tracker()
+  ~k2_tracker()
   {
     nite::NiTE::shutdown();
   }
@@ -478,7 +475,8 @@ public:
   */
   void getSkeleton()
   {
-    skeleton_tracker::user_IDs ids;
+    //skeleton_tracker::user_IDs ids;
+    kinect2_tracker::user_IDs ids;
     niteRc_ = userTracker_.readFrame(&userTrackerFrame_);
     if (niteRc_ != nite::STATUS_OK)
     {

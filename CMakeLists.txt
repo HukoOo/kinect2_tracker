@@ -1,21 +1,21 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(kinect2_tracker)
 
 # check c++11 / c++0x
-include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "-std=c++11")
-elseif(COMPILER_SUPPORTS_CXX0X)
-    set(CMAKE_CXX_FLAGS "-std=c++0x")
-else()
-    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-endif()
+#include(CheckCXXCompilerFlag)
+#CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+#CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+#if(COMPILER_SUPPORTS_CXX11)
+#    set(CMAKE_CXX_FLAGS "-std=c++11")
+#elseif(COMPILER_SUPPORTS_CXX0X)
+#    set(CMAKE_CXX_FLAGS "-std=c++0x")
+#else()
+#    message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+#endif()
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
-## is used, also find other catkin packages
+## is used, also find other catkimessage_generationn packages
 find_package(catkin REQUIRED COMPONENTS
   OpenCV
   cmake_modules
@@ -31,10 +31,11 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_ros
   pcl_conversions
   openni2_camera
+  message_generation
 )
 
 find_package(Eigen REQUIRED)
-find_package(cmake_modules REQUIRED)
+#find_package(cmake_modules REQUIRED)
 
 link_directories(
   ${catkin_LIBRARY_DIRS}
@@ -44,18 +45,21 @@ include_directories(
 )
 
 add_message_files(
-   FILES
-   user_IDs.msg
+  DIRECTORY
+  msg
+  FILES
+  user_IDs.msg
 )
 
 generate_messages(
-    DEPENDENCIES geometry_msgs std_msgs
+  DEPENDENCIES
+  std_msgs
 )
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES kinect2_tracker
-  CATKIN_DEPENDS cv_bridge geometry_msgs image_transport kdl_conversions roscpp roslib tf tf_conversions
+  CATKIN_DEPENDS cv_bridge geometry_msgs std_msgs image_transport kdl_conversions roscpp roslib tf tf_conversions message_runtime
   DEPENDS Eigen
 )
 
@@ -73,7 +77,7 @@ include_directories(
 
 ## Declare a C++ library
 #add_library(kinect2_tracker
-#   src/kinect2_tracker_node.cpp
+# src/kinect2_tracker_node.cpp
 #)
 
 ## Add cmake target dependencies of the library
@@ -97,12 +101,18 @@ include_directories(./include)
 include_directories(./include/Openni2/)
 include_directories(${OpenCV_INCLUDE_DIRS}/include)
 
-# Executables for .cpp files
+## Executables for .cpp files
 add_executable(kinect2_tracker_node src/kinect2_tracker_node.cpp)
 add_executable(frame_creator_node src/frame_creator_node.cpp)
 add_executable(vrep_publisher_node src/vrep_publisher_node.cpp)
 
-# Libraries for the executable files
+## Libraries for the executable files
 target_link_libraries(kinect2_tracker_node OpenNI2 ${NITE2_LIB}  ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
 target_link_libraries(frame_creator_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
 target_link_libraries(vrep_publisher_node ${catkin_LIBRARIES} ${Eigen_LIBRARIES})
+
+## Adding dependencies to the executable files
+## These dependencies require the messages generated from user_IDs.msg
+add_dependencies(kinect2_tracker_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(frame_creator_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
+add_dependencies(vrep_publisher_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS} ${PROJECT_NAME}_generate_messages_cpp)
