@@ -81,7 +81,6 @@ include_directories(
 ## either from message generation or dynamic reconfigure
 # add_dependencies(kinect2_tracker ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-
 ## NiTE2 Library and Directory
 ## Latest driver and is the last update
 set(NITE2_DIR ~/package_ws/NiTE-Linux-x64-2.2)

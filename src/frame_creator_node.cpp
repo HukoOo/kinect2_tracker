@@ -11,7 +11,7 @@
 
 #include <iostream>
 #include <user_IDs.h>
-#include <Eigen/Geometry> 
+#include <Eigen/Geometry>
 #include <Eigen/Dense>
 
 #include <visualization_msgs/Marker.h>
@@ -60,7 +60,7 @@ void addArrow(visualization_msgs::MarkerArray &markers, geometry_msgs::Transform
             marker_arrow.scale.x = 0.01;
             marker_arrow.scale.y = 0.01;
             marker_arrow.scale.z = 0.01;
-            
+
             marker_arrow.color.r = 1.0f;
             marker_arrow.color.g = 0.0f;
             marker_arrow.color.b = 0.0f;
@@ -93,7 +93,7 @@ void addText(visualization_msgs::MarkerArray &markers, geometry_msgs::TransformS
             marker_text.type = visualization_msgs::Marker::TEXT_VIEW_FACING;
             marker_text.action = visualization_msgs::Marker::ADD;
             marker_text.scale.z = 0.05;
-            
+
             marker_text.color.r = 1.0f;
             marker_text.color.g = 1.0f;
             marker_text.color.b = 1.0f;
@@ -123,8 +123,8 @@ tf::Quaternion calcTransformBetweenVectors(tf::Vector3 fromVec, tf::Vector3 toVe
 {
   Eigen::Vector3d eigenFromVec3;
   Eigen::Vector3d eigenToVec3;
-  tf::vectorTFToEigen(fromVec, eigenFromVec3); 
-  tf::vectorTFToEigen(toVec, eigenToVec3);  
+  tf::vectorTFToEigen(fromVec, eigenFromVec3);
+  tf::vectorTFToEigen(toVec, eigenToVec3);
 
   Eigen::Quaterniond eigen_Quaternion;
   eigen_Quaternion.setFromTwoVectors(eigenFromVec3, eigenToVec3);
@@ -137,16 +137,16 @@ void publishBodyTF(tf::TransformBroadcaster tfBroadcast)
 {
   tf::Transform upperTF,lowerTF,refTF;
   tf::Transform torsoTF;
- 
+
   tf::Vector3 torsoVec3 = tf::Vector3(tf_torso.transform.translation.x,
                                       tf_torso.transform.translation.y,
                                       tf_torso.transform.translation.z );
- 
+
   tf::Vector3 RshoulderVec3 = tf::Vector3(tf_right_shoulder.transform.translation.x,
                                           tf_right_shoulder.transform.translation.y,
-                                          tf_right_shoulder.transform.translation.z ); 
-  RshoulderVec3 = (RshoulderVec3 - torsoVec3); 
-  
+                                          tf_right_shoulder.transform.translation.z );
+  RshoulderVec3 = (RshoulderVec3 - torsoVec3);
+
   tf::Vector3 LshoulderVec3 = tf::Vector3(tf_left_shoulder.transform.translation.x,
                                           tf_left_shoulder.transform.translation.y,
                                           tf_left_shoulder.transform.translation.z );
@@ -155,18 +155,18 @@ void publishBodyTF(tf::TransformBroadcaster tfBroadcast)
 
   tf::Vector3 RhipVec3 = tf::Vector3(tf_right_hip.transform.translation.x,
                                      tf_right_hip.transform.translation.y,
-                                     tf_right_hip.transform.translation.z ); 
-  RhipVec3 = (RhipVec3 - torsoVec3); 
-  tf::Vector3 LhipVec3 = tf::Vector3(tf_left_hip.transform.translation.x,tf_left_hip.transform.translation.y,tf_left_hip.transform.translation.z ); 
+                                     tf_right_hip.transform.translation.z );
+  RhipVec3 = (RhipVec3 - torsoVec3);
+  tf::Vector3 LhipVec3 = tf::Vector3(tf_left_hip.transform.translation.x,tf_left_hip.transform.translation.y,tf_left_hip.transform.translation.z );
   LhipVec3 = (LhipVec3 - torsoVec3);
   tf::Vector3 LowerVec3 = RhipVec3.cross(LhipVec3);
-  
+
   // set upper body pose
   upperTF.setOrigin(tf::Vector3(0,0,0));
-  
+
   tf::Vector3 vec_torso2neck= tf::Vector3(tf_neck.transform.translation.x-tf_torso.transform.translation.x,tf_neck.transform.translation.y-tf_torso.transform.translation.y,tf_neck.transform.translation.z-tf_torso.transform.translation.z);
   tf::Vector3 vec_cross= vec_torso2neck.cross(UpperVec3);
-  
+
   // calculate transform matrix between two vectors
   Eigen::Vector3d x1,y1,z1;
   Eigen::Vector3d x2,y2,z2;
@@ -184,17 +184,17 @@ void publishBodyTF(tf::TransformBroadcaster tfBroadcast)
   tf::Quaternion test_tf;
   tf::quaternionEigenToTF(quat, test_tf);
 
-  upperTF.setRotation(test_tf);	   
-  std::stringstream upper_frame_id_stream; 
-  std::string upper_frame_id; 
+  upperTF.setRotation(test_tf);
+  std::stringstream upper_frame_id_stream;
+  std::string upper_frame_id;
   upper_frame_id_stream <<"/upper_body";
   upper_frame_id = upper_frame_id_stream.str();
 
-  std::stringstream r_frame_id_stream; 
-  std::string r_frame_id; 
+  std::stringstream r_frame_id_stream;
+  std::string r_frame_id;
   r_frame_id_stream << "/torso";
   r_frame_id = r_frame_id_stream.str();
-            
+
   tfBroadcast.sendTransform(tf::StampedTransform(upperTF, ros::Time::now(), r_frame_id, upper_frame_id));
 
   // publish reference frame of shoulder & hip
@@ -211,13 +211,13 @@ void publishBodyTF(tf::TransformBroadcaster tfBroadcast)
   quat =  QuaternionRot(x1,y1,z1,x2,y2,z2);
   tf::quaternionEigenToTF(quat, test_tf);
 
-  refTF.setRotation(test_tf);	   
+  refTF.setRotation(test_tf);
 
-  std::stringstream ref_frame_id_stream; 
-  std::string ref_frame_id; 
+  std::stringstream ref_frame_id_stream;
+  std::string ref_frame_id;
   ref_frame_id_stream << "/reference_frame";
   ref_frame_id = ref_frame_id_stream.str();
-            
+
   tfBroadcast.sendTransform(tf::StampedTransform(refTF, ros::Time::now(), r_frame_id, ref_frame_id));
 }
 
@@ -230,18 +230,18 @@ void publishLimbTF(tf::TransformBroadcaster tfBroadcast, geometry_msgs::Transfor
   hipTF.setOrigin(tf::Vector3(0,0,0));
   kneeTF.setOrigin(tf::Vector3(0,0,0));
 
-  tf::Vector3 torso2shoulderVec3 = tf::Vector3(shoulder.transform.translation.x-tf_torso.transform.translation.x,shoulder.transform.translation.y-tf_torso.transform.translation.y,shoulder.transform.translation.z-tf_torso.transform.translation.z ); 
+  tf::Vector3 torso2shoulderVec3 = tf::Vector3(shoulder.transform.translation.x-tf_torso.transform.translation.x,shoulder.transform.translation.y-tf_torso.transform.translation.y,shoulder.transform.translation.z-tf_torso.transform.translation.z );
 
-  tf::Vector3 torso2hipVec3 = tf::Vector3(hip.transform.translation.x-tf_torso.transform.translation.x,hip.transform.translation.y-tf_torso.transform.translation.y,hip.transform.translation.z-tf_torso.transform.translation.z ); 
-  
+  tf::Vector3 torso2hipVec3 = tf::Vector3(hip.transform.translation.x-tf_torso.transform.translation.x,hip.transform.translation.y-tf_torso.transform.translation.y,hip.transform.translation.z-tf_torso.transform.translation.z );
+
   //
-  tf::Vector3 shoulderVec3 = tf::Vector3(shoulder.transform.translation.x,shoulder.transform.translation.y,shoulder.transform.translation.z ); 
-  tf::Vector3 elbowVec3 = tf::Vector3(elbow.transform.translation.x,elbow.transform.translation.y,elbow.transform.translation.z ); 
-  tf::Vector3 handVec3 = tf::Vector3(hand.transform.translation.x,hand.transform.translation.y,hand.transform.translation.z ); 
+  tf::Vector3 shoulderVec3 = tf::Vector3(shoulder.transform.translation.x,shoulder.transform.translation.y,shoulder.transform.translation.z );
+  tf::Vector3 elbowVec3 = tf::Vector3(elbow.transform.translation.x,elbow.transform.translation.y,elbow.transform.translation.z );
+  tf::Vector3 handVec3 = tf::Vector3(hand.transform.translation.x,hand.transform.translation.y,hand.transform.translation.z );
 
-  tf::Vector3 hipVec3 = tf::Vector3(hip.transform.translation.x,hip.transform.translation.y,hip.transform.translation.z ); 
-  tf::Vector3 kneeVec3 = tf::Vector3(knee.transform.translation.x,knee.transform.translation.y,knee.transform.translation.z ); 
-  tf::Vector3 footVec3 = tf::Vector3(foot.transform.translation.x,foot.transform.translation.y,foot.transform.translation.z ); 
+  tf::Vector3 hipVec3 = tf::Vector3(hip.transform.translation.x,hip.transform.translation.y,hip.transform.translation.z );
+  tf::Vector3 kneeVec3 = tf::Vector3(knee.transform.translation.x,knee.transform.translation.y,knee.transform.translation.z );
+  tf::Vector3 footVec3 = tf::Vector3(foot.transform.translation.x,foot.transform.translation.y,foot.transform.translation.z );
 
 
   /////////////////////////////////////////////////////////////
@@ -254,7 +254,7 @@ void publishLimbTF(tf::TransformBroadcaster tfBroadcast, geometry_msgs::Transfor
   tf::Vector3 shoulder_z = elbow_z;
   tf::Vector3 elbow_y = elbow_z.cross(elbow_x);
   tf::Vector3 shoulder_y = shoulder_z.cross(shoulder_x);
-  
+
   // calculate transform matrix between two vectors
   Eigen::Vector3d x1,y1,z1;
   Eigen::Vector3d x2,y2,z2;
@@ -274,12 +274,12 @@ void publishLimbTF(tf::TransformBroadcaster tfBroadcast, geometry_msgs::Transfor
   tf::Quaternion quat_tf;
   tf::quaternionEigenToTF(quat, quat_tf);
 
-  shoulderTF.setRotation(quat_tf);	   
+  shoulderTF.setRotation(quat_tf);
 
-  std::string frame_id, ref_frame_id; 
+  std::string frame_id, ref_frame_id;
   frame_id = sideName + "Shoulder";
   ref_frame_id = sideName + "_shoulder";
-            
+
   tfBroadcast.sendTransform(tf::StampedTransform(shoulderTF, ros::Time::now(), ref_frame_id, frame_id));
 
 
@@ -293,17 +293,17 @@ void publishLimbTF(tf::TransformBroadcaster tfBroadcast, geometry_msgs::Transfor
   quat =  QuaternionRot(x1,y1,z1,x2,y2,z2);
   tf::quaternionEigenToTF(quat, quat_tf);
 
-  elbowTF.setRotation(quat_tf);	   
-  
+  elbowTF.setRotation(quat_tf);
+
   frame_id = sideName + "Elbow";
   ref_frame_id = sideName + "_elbow";
-            
+
   tfBroadcast.sendTransform(tf::StampedTransform(elbowTF, ros::Time::now(), ref_frame_id, frame_id));
 
 
   /////////////////////////////////////////////////////////////
   // Leg
-  
+
   // set arm axis
   tf::Vector3 knee_x = (footVec3 - kneeVec3);
   tf::Vector3 hip_x = (kneeVec3 - hipVec3);
@@ -311,7 +311,7 @@ void publishLimbTF(tf::TransformBroadcaster tfBroadcast, geometry_msgs::Transfor
   tf::Vector3 hip_z = knee_z;
   tf::Vector3 knee_y = knee_z.cross(knee_x);
   tf::Vector3 hip_y = hip_z.cross(hip_x);
-  
+
   // calculate transform matrix between two vectors
   x1 = Eigen::Vector3d(1,0,0).normalized();
   y1 = Eigen::Vector3d(0,1,0).normalized();
@@ -327,11 +327,11 @@ void publishLimbTF(tf::TransformBroadcaster tfBroadcast, geometry_msgs::Transfor
   quat =  QuaternionRot(x1,y1,z1,x2,y2,z2);
   tf::quaternionEigenToTF(quat, quat_tf);
 
-  hipTF.setRotation(quat_tf);	   
-  
+  hipTF.setRotation(quat_tf);
+
   frame_id = sideName + "Hip";
   ref_frame_id = sideName + "_hip";
-            
+
   tfBroadcast.sendTransform(tf::StampedTransform(hipTF, ros::Time::now(), ref_frame_id, frame_id));
 
 
@@ -345,11 +345,11 @@ void publishLimbTF(tf::TransformBroadcaster tfBroadcast, geometry_msgs::Transfor
   quat =  QuaternionRot(x1,y1,z1,x2,y2,z2);
   tf::quaternionEigenToTF(quat, quat_tf);
 
-  kneeTF.setRotation(quat_tf);	  
-  
+  kneeTF.setRotation(quat_tf);
+
   frame_id = sideName + "Knee";
   ref_frame_id = sideName + "_knee";
-            
+
   tfBroadcast.sendTransform(tf::StampedTransform(kneeTF, ros::Time::now(), ref_frame_id, frame_id));
 
 
@@ -370,11 +370,11 @@ geometry_msgs::Quaternion calcLinkTransform(geometry_msgs::TransformStamped _par
 
   //conversion of tf:Vec3 to eigen
   Eigen::Vector3d eigenVec1;
-  tf::vectorTFToEigen(Vec1, eigenVec1); 
+  tf::vectorTFToEigen(Vec1, eigenVec1);
   Eigen::Vector3d eigenVec2;
-  tf::vectorTFToEigen(Vec2, eigenVec2);     
+  tf::vectorTFToEigen(Vec2, eigenVec2);
 
-  //conversion of tf:vec3 to eigen         
+  //conversion of tf:vec3 to eigen
   Eigen::Quaterniond eigenQuaternion;
   eigenQuaternion.setFromTwoVectors(eigenVec1, eigenVec2);
   tf::Quaternion tf_Quaternion;
@@ -391,7 +391,7 @@ int main(int argc, char** argv){
   ros::NodeHandle nh;
   ros::Publisher marker_pub,elbow_pub,knee_pub,hip_pub,shoulder_pub;
   ros::Publisher shoulderR_pub,shoulderL_pub,elbowR_pub,elbowL_pub;
-  
+
   marker_pub = nh.advertise<visualization_msgs::MarkerArray>("skeleton/markers", 100);
 
   tf2_ros::Buffer tfBuffer;
@@ -399,7 +399,7 @@ int main(int argc, char** argv){
 
   tf::TransformBroadcaster tfBroadcast;
   ros::Rate rate(100.0);
-  
+
 
   while (nh.ok())
   {
@@ -440,7 +440,7 @@ int main(int argc, char** argv){
       tf_right_foot = tfBuffer.lookupTransform("camera_frame", "right_foot",
                                ros::Time(0));
     }
-    catch (tf2::TransformException &ex) 
+    catch (tf2::TransformException &ex)
     {
       ROS_WARN("%s",ex.what());
       ros::Duration(1.0).sleep();
@@ -448,14 +448,14 @@ int main(int argc, char** argv){
     }
 
 
-    
+
     // Calculate torso pose
     publishBodyTF(tfBroadcast);
     publishLimbTF(tfBroadcast, tf_left_shoulder, tf_left_elbow, tf_left_hand, tf_left_hip, tf_left_knee, tf_left_foot, "left");
-    publishLimbTF(tfBroadcast, tf_right_shoulder, tf_right_elbow, tf_right_hand, tf_right_hip, tf_right_knee, tf_right_foot, "right"); 
+    publishLimbTF(tfBroadcast, tf_right_shoulder, tf_right_elbow, tf_right_hand, tf_right_hip, tf_right_knee, tf_right_foot, "right");
 
     // Markers for visualization in Rviz
-    int id=0;    
+    int id=0;
     visualization_msgs::MarkerArray markers;
     addArrow(markers, tf_torso, tf_left_shoulder,id);
     addArrow(markers, tf_torso, tf_right_shoulder,id);
@@ -471,7 +471,7 @@ int main(int argc, char** argv){
     addArrow(markers, tf_right_hip, tf_right_knee,id);
     addArrow(markers, tf_left_knee, tf_left_foot,id);
     addArrow(markers, tf_right_knee, tf_right_foot,id);
-    
+
     marker_pub.publish(markers);
 
     rate.sleep();
